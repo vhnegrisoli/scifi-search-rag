@@ -83,18 +83,3 @@ class VectorStore:
             namespace=self.config.pinecone_index,
             filter=metadata_filter
         )
-        
-    
-    @staticmethod
-    def start():
-        query = 'O que o documento diz sobre Asimov e Os Próprios Deuses?'
-
-        vs = VectorStore()
-
-        #filter_id = str(uuid4())
-        filter_id = '36eafca6-5848-4e58-be2c-fdc8888588ff'
-
-        #vs.create_embeddings(filter_id=filter_id)
-        res = vs.search_vector_store(query=query, filter_id=filter_id)
-        print(len(res))
-        print(res[0])
