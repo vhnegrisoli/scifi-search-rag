@@ -7,5 +7,4 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Inclui a rota
 app.include_router(rag_router, prefix="/api", tags=["RAG"])

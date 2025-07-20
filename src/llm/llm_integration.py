@@ -1,30 +1,12 @@
 from langchain_core.messages import BaseMessage
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
-from src.config.config import AppConfig
-from typing import List, Optional
 from langchain_core.documents import Document
-from dataclasses import dataclass, asdict, field
-import json
+from src.config.config import AppConfig
+from src.models.llm_models import LLMResponse, LLMUsageResponse
+from src.config.prompt import RAG_PROMPT
+from typing import List
 
-
-@dataclass
-class LLMUsageResponse:
-    input_tokens: int = 0
-    output_tokens: int = 0
-    total_tokens: int = 0
-
-
-@dataclass
-class LLMResponse:
-    content: str
-    prompt: str
-    total_docs: int = 0
-    usage: Optional[LLMUsageResponse] = None
-    docs: List[str] = field(default_factory=list)
-
-    def to_json(self):
-        return json.dumps(asdict(self))
 
 class LLMCall:
     def __init__(self):
@@ -33,24 +15,7 @@ class LLMCall:
             model=self.config.openai_model,
             api_key=self.config.openai_key
         )
-        self.prompt = PromptTemplate.from_template(
-            """
-            You are an AI assistant specialized in Sci-Fi contexts.
-
-            Context from documents:
-            {context}
-
-            Memory of previous interactions:
-            {memory}
-
-            User's current message:
-            {message}
-
-            Answer clearly and concisely.
-
-            You must not invent anything, only answer based on the context, message and memory.
-            """
-        )
+        self.prompt = PromptTemplate.from_template(RAG_PROMPT)
 
     def _format_docs(self, docs: List[Document]) -> str:
         return "Document chunk:\n\n" + "\n\nDocument chunk:\n\n".join(doc.page_content for doc in docs)
@@ -71,7 +36,6 @@ class LLMCall:
         
         return LLMResponse(
             content=response.content,
-            prompt=formatted_prompt,
             usage=self._get_usage(response=response),
             total_docs=len(docs),
             docs=[doc.page_content for doc in docs]

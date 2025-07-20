@@ -7,6 +7,7 @@ load_dotenv()
 
 
 EMPTY = ''
+DEFAULT_TOP_K = 5
 
 
 @dataclass
@@ -16,6 +17,8 @@ class AppConfigData:
     openai_embedding_model: str = None
     pinecone_key: str = None
     pinecone_index: str = None
+    filter_id: str = None
+    top_k: int = DEFAULT_TOP_K
 
 
 class AppConfig:
@@ -25,11 +28,13 @@ class AppConfig:
         self.openai_embedding_model = os.getenv('OPENAI_EMBEDDING_MODEL', EMPTY)
         self.pinecone_key = os.getenv('PINECONE_API_KEY', EMPTY)
         self.pinecone_index = os.getenv('PINECONE_INDEX', EMPTY)
-    
+        self.filter_id = os.getenv('DEFAULT_VECTOR_FILTER_ID', EMPTY)
+
     def get_config(self) -> AppConfigData:
         return AppConfigData(
             openai_key=self.openai_key,
             openai_model=self.openai_model,
             pinecone_key=self.pinecone_key,
-            pinecone_index=self.pinecone_index
+            pinecone_index=self.pinecone_index,
+            filter_id=self.filter_id
         )
