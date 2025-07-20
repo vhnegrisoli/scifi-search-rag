@@ -61,6 +61,7 @@ OPENAI_EMBEDDING_MODEL=text-embedding-ada-002
 PINECONE_API_KEY=pcsk_...
 PINECONE_INDEX=scifi-rag
 PROJECT_ROOT=.
+DEFAULT_VECTOR_FILTER_ID=36eafca6-5848-4e58-be2c-fdc8888588ff
 ```
 
 ### 4. Rode o servidor
@@ -73,11 +74,17 @@ uvicorn app:app --reload
 
 ## 📥 Exemplo de uso
 
-### `POST /chat`
+### `POST /api/query`
 
 ```json
 {
-  "question": "Quem foi o precursor da ficção científica moderna?"
+  "query": "Liste os livros de Isaac Asimov que foram citados",
+  "filter_id": "36eafca6-5848-4e58-be2c-fdc8888588ff",
+  "top_k": 15,
+  "history": [
+    "user: Isaac Asimov é citado no documento?",
+    "assistant: Sim, alguns livros de Isaac Asimov são citados!"
+  ]
 }
 ```
 
@@ -85,15 +92,17 @@ uvicorn app:app --reload
 
 ```json
 {
-  "answer": "H.G. Wells é frequentemente citado como um dos precursores...",
-  "consumption": {
-    "input": 1550,
-    "output": 445,
-    "total": 1995
+  "content": "Os livros de Isaac Asimov que foram citados nos documentos são:\n\n1. **The Bicentennial Man** (1976) - Incluído em \"The Complete Robot\".\n2. **The Caves of Steel** (1954).",
+  "total_docs": 15,
+  "usage": {
+    "input_tokens": 10490,
+    "output_tokens": 50,
+    "total_tokens": 10540
   },
   "docs": [
-    "Doc chunk 1",
-    "Doc chunk 2"
+    "caótico. E embora não possamos supor que Asimov tenha previsto a Teoria do\nCaos, o fato é que na série Duna,...",
+    "determinante original da FC parece tender para a vertente materialista ou\nprotestante; mas de fato aquela vertente católica mística/fantástica está muito...",
+    "e Peter Gallison, com Amy Slaton (orgs.). Picturing Science and Producing Art. Nova..."
   ]
 }
 ```
