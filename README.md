@@ -111,18 +111,32 @@ uvicorn app:app --reload
 ## 📌 Estrutura do projeto
 
 ```
-sci-fi-history-rag-api/
-├── app/
-│   ├── main.py            # Entrypoint da API
-│   ├── rag_chain.py       # Lógica do LangChain
-│   ├── vector_store.py    # Integração com Pinecone
-│   └── utils.py
-├── data/
-│   └── sci-fi-book.pdf    # Livro usado como fonte
-├── tests/
-│   └── test_api.py
-├── requirements.txt
-└── README.md
+openai-scifi-rag/
+├── files/
+│   └── scifi.txt                  # Texto de entrada usado no projeto
+├── app.py                         # Entrypoint da aplicação FastAPI
+├── src/
+│   ├── config/
+│   │   ├── __init__.py
+│   │   ├── config.py              # Configurações gerais do projeto
+│   │   └── prompt.py              # Prompts customizados para o LLM
+│   ├── llm/
+│   │   ├── __init__.py
+│   │   └── llm_integration.py     # Integração com LLM (OpenAI ou local)
+│   ├── models/
+│   │   ├── endpoint.py            # Schemas para requests/responses da API
+│   │   └── llm_models.py          # Modelos auxiliares relacionados ao LLM
+│   ├── routes/
+│   │   └── rag_route.py           # Definição de endpoints da API
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── rag_service.py         # Regras de negócio do RAG
+│   ├── vector_store/
+│   │   ├── __init__.py
+│   │   └── vector_store.py        # Integração com o repositório vetorial (ex: Pinecone)
+│   └── __init__.py
+├── requirements.txt               # Dependências do projeto
+└── README.md                      # Instruções e descrição do projeto
 ```
 
 ---
