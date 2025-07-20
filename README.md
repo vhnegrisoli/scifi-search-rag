@@ -66,7 +66,7 @@ PROJECT_ROOT=.
 ### 4. Rode o servidor
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn app:app --reload
 ```
 
 ---
