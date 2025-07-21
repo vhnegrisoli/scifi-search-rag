@@ -7,3 +7,4 @@ langchain-pinecone==0.2.9
 python-dotenv==1.1.1
 fastapi==0.116.1
 uvicorn==0.35.0
+sentence-transformers==5.0.0
