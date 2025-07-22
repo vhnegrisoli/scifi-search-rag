@@ -1,6 +1,8 @@
 from src.config.config import AppConfig
-
-from langchain_community.embeddings import OpenAIEmbeddings
+from src.models.providers import EmbeddingProvider
+from langchain_core.embeddings import Embeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import CharacterTextSplitter
@@ -23,18 +25,30 @@ FILE_PATH = os.path.join(ROOT, "files", "scifi.txt")
 
 
 class VectorStore:
-    def __init__(self):
-        self.config = AppConfig().get_config()
-        self.embedding = OpenAIEmbeddings(
-            api_key=self.config.openai_key,
-            model=self.config.openai_embedding_model
+    def __init__(self, provider: EmbeddingProvider):
+        self._provider = provider
+        self._config = AppConfig().get_config()
+        self._index = ''
+        self._define_embedding_model()
+        self._vector_store = PineconeVectorStore(
+            pinecone_api_key=self._config.pinecone_key,
+            index_name=self._index,
+            embedding=self._embedding
         )
-        self.vector_store = PineconeVectorStore(
-            pinecone_api_key=self.config.pinecone_key,
-            index_name=self.config.pinecone_index,
-            embedding=self.embedding
-        )
-    
+
+    def _define_embedding_model(self) -> Embeddings:
+        if EmbeddingProvider.OPENAI_EMBEDDINGS == self._provider:
+            self._embedding = OpenAIEmbeddings(
+                api_key=self._config.openai_key,
+                model=self._config.openai_embedding_model
+            )
+            self._index = self._config.pinecone_openai_index
+        if EmbeddingProvider.HUGGINFACE_EMBEDDINGS == self._provider:
+            self._embedding = HuggingFaceEmbeddings(
+                model_name=self._config.huggingface_embedding_model,
+            )
+            self._index = self._config.pinecone_huggingface_index
+
     def _chunk_docs(self, docs, chunk_size):
         for i in range(0, len(docs), chunk_size):
             yield docs[i:i + chunk_size]
@@ -43,7 +57,7 @@ class VectorStore:
         print(f"Creating embeddings for file: {filter_id}")
         docs = self._split_document(filter_id=filter_id)
         self._insert_into_vector_store(docs=docs)
-        
+
     def _split_document(self, filter_id: str) -> List[Document]:
         loader = TextLoader(FILE_PATH, encoding='utf-8')
         documents = loader.load()
@@ -57,29 +71,29 @@ class VectorStore:
 
         for doc in docs:
             doc.metadata[FILTER_ID_METADATA] = filter_id
-        
+
         return docs
-    
+
     def _insert_into_vector_store(self, docs: List[Document]) -> None:
-        vectorstore = self.vector_store.from_existing_index(
-            index_name=self.config.pinecone_index,
-            embedding=self.embedding
+        vectorstore = self._vector_store.from_existing_index(
+            index_name=self._index,
+            embedding=self._embedding
         )
         for chunk in self._chunk_docs(docs, BATCH_UPSERT):
             vectorstore.add_documents(
                 chunk,
-                namespace=self.config.pinecone_index
+                namespace=self._index
             )
 
     def search_vector_store(self, query: str, filter_id: str, k: int = 15) -> List[Document]:
-        vector_store = self.vector_store.from_existing_index(
-            index_name=self.config.pinecone_index,
-            embedding=self.embedding
+        vector_store = self._vector_store.from_existing_index(
+            index_name=self._index,
+            embedding=self._embedding
         )
-        metadata_filter = { FILTER_ID_METADATA: filter_id }
+        metadata_filter = {FILTER_ID_METADATA: filter_id}
         return vector_store.similarity_search(
             query=query,
             k=k,
-            namespace=self.config.pinecone_index,
+            namespace=self._index,
             filter=metadata_filter
         )
