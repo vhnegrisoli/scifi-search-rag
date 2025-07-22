@@ -50,7 +50,19 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Configure as variáveis de ambiente
+### 3. Instale o Ollama com o modelo Llama3.1:8b
+
+Basta executar o comando:
+
+`docker-compose up --build -d`
+
+E por fim rodar o comando:
+
+`docker exec -it ollama ollama pull llama3.1:8b`
+
+Ou então, instale manualmente o Ollama e baixe o modelo llama3.1 com o comando `ollama pull llama3.1:8b`.
+
+### 4. Configure as variáveis de ambiente
 
 Crie um arquivo `.env` com:
 
@@ -64,7 +76,7 @@ PROJECT_ROOT=.
 DEFAULT_VECTOR_FILTER_ID=36eafca6-5848-4e58-be2c-fdc8888588ff
 ```
 
-### 4. Rode o servidor
+### 5. Rode o servidor
 
 ```bash
 uvicorn app:app --reload
