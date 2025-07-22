@@ -12,19 +12,20 @@ from typing import List
 
 
 class LLMCall:
-    def __init__(self):
-        self.config = AppConfig().get_config()
-        self.prompt = PromptTemplate.from_template(RAG_PROMPT)
-        self.llm = None
+    def __init__(self, provider: LLMProvider):
+        self._provider = provider
+        self._config = AppConfig().get_config()
+        self._prompt = PromptTemplate.from_template(RAG_PROMPT)
+        self._llm = None
 
-    def _get_llm(self, provider: LLMProvider) -> BaseChatModel:
-        if LLMProvider.OPENAI == provider:
-            self.llm = ChatOpenAI(
-                model=self.config.openai_model,
-                api_key=self.config.openai_key
+    def _get_llm(self) -> BaseChatModel:
+        if LLMProvider.OPENAI == self._provider:
+            self._llm = ChatOpenAI(
+                model=self._config.openai_model,
+                api_key=self._config.openai_key
             )
-        if LLMProvider.LLAMA3 == provider:
-            self.llm = ChatOllama(model="llama3.1:8b")
+        if LLMProvider.LLAMA3 == self._provider:
+            self._llm = ChatOllama(model="llama3.1:8b")
 
     def _format_docs(self, docs: List[Document]) -> str:
         return "Document chunk:\n\n" + "\n\nDocument chunk:\n\n".join(doc.page_content for doc in docs)
@@ -37,16 +38,16 @@ class LLMCall:
                  history: List[str],
                  docs: List[Document],
                  provider: LLMProvider) -> LLMResponse:
-        
-        self._get_llm(provider=provider)
 
-        formatted_prompt = self.prompt.format(
+        self._get_llm()
+
+        formatted_prompt = self._prompt.format(
             context=self._format_docs(docs),
             memory=self._format_history(history),
             message=message
         )
-        response = self.llm.invoke(formatted_prompt)
-        
+        response = self._llm.invoke(formatted_prompt)
+
         return LLMResponse(
             content=response.content,
             usage=self._get_usage(response=response, provider=provider),
@@ -60,8 +61,9 @@ class LLMCall:
         if LLMProvider.OPENAI == provider:
             usage = response.response_metadata.get("token_usage", None)
             if usage:
+                print(usage)
                 input = self._get_from_usage(usage=usage, key='prompt_tokens')
-                output = self._get_from_usage(usage=usage, key='completions_tokens')
+                output = self._get_from_usage(usage=usage, key='completion_tokens')
 
         if LLMProvider.LLAMA3 == provider:
             usage = response.usage_metadata

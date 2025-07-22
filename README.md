@@ -1,6 +1,6 @@
 # 🤖📚 Sci-Fi History RAG API
 
-Um microserviço em Python que utiliza **LangChain**, **Pinecone**, **FastAPI** e **OpenAI** para responder perguntas sobre a história da ficção científica com base em um livro indexado.
+Um microserviço em Python que utiliza **LangChain**, **Pinecone** e **FastAPI**, e com os modelos **OpenAI**, **Llama 3** e **HuggingFace** para responder perguntas sobre a história da ficção científica com base em um livro indexado.
 
 > 🔍 Powered by Retrieval-Augmented Generation (RAG) para oferecer respostas contextualizadas e precisas.
 
@@ -10,26 +10,28 @@ Um microserviço em Python que utiliza **LangChain**, **Pinecone**, **FastAPI** 
 - 📖 Baseado em um livro sobre a história da ficção científica
 - 🧠 Vetorização com Pinecone
 - ⚡ API REST com FastAPI
-- 🤖 Integração com modelos da OpenAI (GPT)
+- 🤖 Integração com modelos de LLM **OpenAI** -> **gpt-4o-mini**
+- 🤖 Integração com modelos de LLM **Ollama** -> **llama3.1:8b**
+- 🤖 Integração com modelos de embeddings **OpenAI** -> **text-embedding-ada-002**
+- 🤖 Integração com modelos de embeddings **HuggingFace** -> **sentence-transformers/all-MiniLM-L6-v2**
 - 🧪 Testes prontos para validar endpoints e lógica
 
 ## 📚 Sobre o projeto
 
-Este projeto responde perguntas em linguagem natural sobre obras, autores e movimentos históricos da ficção científica, extraindo dados diretamente de um livro processado e indexado. Ideal para:
-
-- Estudantes e pesquisadores
-- Leitores apaixonados por sci-fi
-- Aplicações educacionais
+Este projeto responde perguntas em linguagem natural sobre obras, autores e movimentos históricos da ficção científica, extraindo dados diretamente de um livro processado e indexado. Ideal para leitores apaixonados por sci-fi, como eu.
 
 ## 🧰 Tecnologias Utilizadas
 
-| Tecnologia  | Descrição                                      |
-|-------------|------------------------------------------------|
-| 🐍 Python 3  | Linguagem principal                            |
-| ⚡ FastAPI   | Criação da API REST                            |
-| 🔗 LangChain | Framework para RAG e pipelines de LLMs         |
-| 🌲 Pinecone  | Banco vetorial para buscas semânticas          |
-| 🧠 OpenAI    | Geração de linguagem natural com modelos LLM   |
+| Tecnologia  | Descrição                                    |
+| ----------- | -------------------------------------------- |
+| 🐍 Python 3  | Linguagem principal                          |
+| ⚡ FastAPI   | Criação da API REST                          |
+| 🔗 LangChain | Framework para RAG e pipelines de LLMs       |
+| 🌲 Pinecone  | Banco vetorial para buscas semânticas        |
+| 🧠 OpenAI    | Geração de linguagem natural com modelos LLM (gpt-4o-mini) |
+| 🧠 Ollama    | Geração de linguagem natural com modelos LLM (llama3.1:8b) |
+| 🧠 OpenAI    | Geração de modelos de embeddings (text-embedding-ada-002) |
+| 🧠 HuggingFace    | Geração de modelos de embeddings (sentence-transformers/all-MiniLM-L6-v2) |
 
 ---
 
@@ -71,9 +73,11 @@ OPENAI_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
 OPENAI_EMBEDDING_MODEL=text-embedding-ada-002
 PINECONE_API_KEY=pcsk_...
-PINECONE_INDEX=scifi-rag
+PINECONE_OPENAI_INDEX=scifi-rag
+PINECONE_HUGGINGFACE_INDEX=scifi-rag-huggingface
 PROJECT_ROOT=.
-DEFAULT_VECTOR_FILTER_ID=36eafca6-5848-4e58-be2c-fdc8888588ff
+LLAMA_MODEL=llama3.1:8b
+HUGGINGFACE_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 ```
 
 ### 5. Rode o servidor
@@ -134,10 +138,11 @@ openai-scifi-rag/
 │   │   └── prompt.py              # Prompts customizados para o LLM
 │   ├── llm/
 │   │   ├── __init__.py
-│   │   └── llm_integration.py     # Integração com LLM (OpenAI ou local)
+│   │   └── llm_integration.py     # Integração com LLM (OpenAI ou Llama)
 │   ├── models/
 │   │   ├── endpoint.py            # Schemas para requests/responses da API
 │   │   └── llm_models.py          # Modelos auxiliares relacionados ao LLM
+│   │   └── providers.py           # Enums que definem quais providers serão usados na LLM e nos embeddings
 │   ├── routes/
 │   │   └── rag_route.py           # Definição de endpoints da API
 │   ├── services/

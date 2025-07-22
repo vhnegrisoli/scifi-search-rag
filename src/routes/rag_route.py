@@ -9,9 +9,10 @@ router = APIRouter()
 
 @router.post("/query", response_model=LLMResponse)
 def query_rag(request: QueryRequest) -> dict:
+
     service = RagService()
     response = service.query_rag(request=request)
-    
+
     if "error" in response:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
