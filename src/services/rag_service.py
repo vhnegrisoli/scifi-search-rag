@@ -35,6 +35,7 @@ class RagService:
         response = self._llm.call_llm(
             message=request.query,
             docs=docs,
-            history=request.history
+            history=request.history,
+            provider=request.llm_provider
         )
         return response
