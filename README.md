@@ -134,26 +134,28 @@ openai-scifi-rag/
 ├── src/
 │   ├── config/
 │   │   ├── __init__.py
-│   │   ├── config.py              # Configurações gerais do projeto
-│   │   └── prompt.py              # Prompts customizados para o LLM
+│   │   ├── config.py                # Configurações gerais do projeto
+│   │   └── prompt.py                # Prompts customizados para o LLM
 │   ├── llm/
 │   │   ├── __init__.py
-│   │   └── llm_integration.py     # Integração com LLM (OpenAI ou Llama)
+│   │   └── llm_integration.py       # Integração com LLM (OpenAI ou Llama)
 │   ├── models/
-│   │   ├── endpoint.py            # Schemas para requests/responses da API
-│   │   └── llm_models.py          # Modelos auxiliares relacionados ao LLM
-│   │   └── providers.py           # Enums que definem quais providers serão usados na LLM e nos embeddings
+│   │   ├── endpoint.py              # Schemas para requests/responses da API
+│   │   └── llm_models.py            # Modelos auxiliares relacionados ao LLM
+│   │   └── providers.py             # Enums que definem quais providers serão usados na LLM e nos embeddings
 │   ├── routes/
-│   │   └── rag_route.py           # Definição de endpoints da API
+│   │   └── rag_route.py             # Definição de endpoints de RAG da API
+│   │   └── vectorization_route.py   # Definição de endpoints de Vetorização da API
 │   ├── services/
 │   │   ├── __init__.py
-│   │   └── rag_service.py         # Regras de negócio do RAG
+│   │   └── rag_service.py           # Regras de negócio do RAG
+│   │   └── vectorization_service.py # Regras de negócio para Vetorização
 │   ├── vector_store/
 │   │   ├── __init__.py
-│   │   └── vector_store.py        # Integração com o repositório vetorial (ex: Pinecone)
+│   │   └── vector_store.py          # Integração com o Banco de Vetores (ex: Pinecone)
 │   └── __init__.py
-├── requirements.txt               # Dependências do projeto
-└── README.md                      # Instruções e descrição do projeto
+├── requirements.txt                 # Dependências do projeto
+└── README.md                        # Instruções e descrição do projeto
 ```
 
 ---
