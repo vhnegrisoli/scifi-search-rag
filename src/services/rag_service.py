@@ -2,7 +2,7 @@ from typing import List
 from src.models.endpoint import QueryRequest
 from src.llm.llm_integration import LLMCall
 from src.models.llm_models import LLMResponse
-from src.vector_store.vector_store import VectorStore
+from src.services.vectorization_service import VectorizationService
 from langchain_core.documents import Document
 
 
@@ -17,7 +17,7 @@ class RagService:
 
     def _define_llm_vector_store(self, request: QueryRequest) -> LLMCall:
         self._llm = LLMCall(provider=request.llm_provider)
-        self._vector_store = VectorStore(provider=request.embedding_provider)
+        self._vectorization_service = VectorizationService(embedding_provider=request.embedding_provider)
 
     def query_rag(self, request: QueryRequest) -> dict:
         try:
@@ -36,15 +36,15 @@ class RagService:
             raise FilterIdNotFoundError("Filter ID must be provided!")
 
     def _get_vector_search(self, request: QueryRequest) -> List[Document]:
-        return self._vector_store.search_vector_store(
+        return self._vectorization_service.search_vector_store(
             filter_id=request.filter_id,
             query=request.query,
-            k=request.top_k
+            top_k=request.top_k
     )
 
     def _get_llm_call(self,
                       request: QueryRequest,
-                      docs: List[Document]) -> LLMResponse:
+                      docs: List[str]) -> LLMResponse:
         response = self._llm.call_llm(
             message=request.query,
             docs=docs,

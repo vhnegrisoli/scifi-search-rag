@@ -43,7 +43,7 @@ class VectorStore:
                 model=self._config.openai_embedding_model
             )
             self._index = self._config.pinecone_openai_index
-        if EmbeddingProvider.HUGGINFACE_EMBEDDINGS == self._provider:
+        if EmbeddingProvider.HUGGINGFACE_EMBEDDINGS == self._provider:
             self._embedding = HuggingFaceEmbeddings(
                 model_name=self._config.huggingface_embedding_model,
             )
