@@ -28,7 +28,7 @@ class LLMCall:
             self._llm = ChatOllama(model="llama3.1:8b")
 
     def _format_docs(self, docs: List[Document]) -> str:
-        return "Document chunk:\n\n" + "\n\nDocument chunk:\n\n".join(doc.page_content for doc in docs)
+        return "Document chunk:\n\n" + "\n\nDocument chunk:\n\n".join(doc for doc in docs)
 
     def _format_history(self, history: List[str]) -> str:
         return "\n".join(history)
@@ -36,7 +36,7 @@ class LLMCall:
     def call_llm(self,
                  message: str,
                  history: List[str],
-                 docs: List[Document],
+                 docs: List[str],
                  provider: LLMProvider) -> LLMResponse:
 
         self._get_llm()
@@ -52,7 +52,7 @@ class LLMCall:
             content=response.content,
             usage=self._get_usage(response=response, provider=provider),
             total_docs=len(docs),
-            docs=[doc.page_content for doc in docs]
+            docs=docs
         )
 
     def _get_usage(self, response: BaseMessage, provider: LLMProvider) -> LLMUsageResponse:
@@ -61,7 +61,6 @@ class LLMCall:
         if LLMProvider.OPENAI == provider:
             usage = response.response_metadata.get("token_usage", None)
             if usage:
-                print(usage)
                 input = self._get_from_usage(usage=usage, key='prompt_tokens')
                 output = self._get_from_usage(usage=usage, key='completion_tokens')
 

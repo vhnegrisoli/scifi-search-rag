@@ -13,3 +13,13 @@ class LLMResponse(BaseModel):
     total_docs: int = 0
     usage: Optional[LLMUsageResponse] = None
     docs: List[str] = []
+
+
+class VectorizationResponse(BaseModel):
+    status: str
+    filter_id: str
+    message: str
+
+
+class VectorSearchResponse(BaseModel):
+    docs: List[str] = []
